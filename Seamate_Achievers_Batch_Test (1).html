@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Seamate Achievers Batch Test</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+:root{--n:#1b3a63;--n2:#2c5287;--bg:#eef2f8;--ln:#c9d3e3;--ok:#2e8b57;--bad:#c0392b;--mk:#7d3c98}
+*{box-sizing:border-box}html,body{margin:0}
+body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:#16253b;min-height:100vh}
+header{background:var(--n);color:#fff;display:flex;align-items:center;gap:10px;padding:8px 12px;position:sticky;top:0;z-index:5;flex-wrap:wrap}
+header img{width:46px;height:46px;border-radius:50%;background:#fff}
+header h1{font-size:clamp(15px,3.6vw,22px);margin:0;flex:1;min-width:150px}
+.hs{font-size:13px;text-align:right}.hs b{display:block}
+#timer{font:700 20px ui-monospace,Menlo,monospace;background:#fff;color:var(--n);padding:4px 10px;border-radius:6px;display:none}
+#timer.low{color:#fff;background:var(--bad)}
+.page{display:none;max-width:1100px;margin:0 auto;padding:14px}
+.card{background:#fff;border:1px solid var(--ln);border-radius:10px;padding:16px;margin-bottom:12px}
+h2{margin:0 0 10px;color:var(--n)}
+label.f{display:block;margin:10px 0 4px;font-weight:600}
+input[type=text],input[type=tel],input[type=email],textarea{width:100%;padding:11px;border:1px solid var(--ln);border-radius:8px;font:inherit}
+button{font:inherit;cursor:pointer;border:0;border-radius:8px;padding:10px 14px;background:var(--n);color:#fff;font-weight:600}
+button.s{background:#fff;color:var(--n);border:1.5px solid var(--n)}button.m{background:var(--mk)}button.d{background:var(--bad)}
+button:disabled{opacity:.4;cursor:not-allowed}
+.err{color:var(--bad);font-size:13px;min-height:18px;margin-top:6px}
+.ins li{margin:5px 0}
+table.t{border-collapse:collapse;width:100%;font-size:14px}.t td,.t th{border:1px solid var(--ln);padding:6px 8px;text-align:left}
+#exam{padding:10px}
+.wrap{display:grid;grid-template-columns:1fr 300px;gap:12px}
+#qcard{user-select:none;-webkit-user-select:none}
+.qh{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-weight:700;color:var(--n);gap:8px}
+.chip{background:var(--bg);border:1px solid var(--ln);border-radius:20px;padding:2px 10px;font-size:12px}
+#qtext{font-size:clamp(16px,2.4vw,19px);line-height:1.5;margin:8px 0 12px}
+.opt{display:flex;gap:10px;align-items:center;border:1.5px solid var(--ln);border-radius:9px;padding:10px 12px;margin:8px 0;cursor:pointer;background:#fff}
+.opt.sel{border-color:var(--n);background:#e4ecf8}.opt input{display:none}
+.opt b{width:26px;height:26px;border-radius:50%;background:var(--bg);display:flex;align-items:center;justify-content:center;flex:none}
+.opt.sel b{background:var(--n);color:#fff}
+.btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.btns button{flex:1 1 90px}
+#pal{position:sticky;top:76px;align-self:start}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(38px,1fr));gap:6px;max-height:48vh;overflow:auto;padding:2px}
+.grid button{padding:8px 0;background:#d9dee8;color:#16253b;font-size:13px}
+.grid .a{background:var(--ok);color:#fff}.grid .u{background:var(--bad);color:#fff}.grid .m{background:var(--mk);color:#fff}
+.grid .c{outline:3px solid #f2b705;outline-offset:1px}
+.lg{display:flex;flex-wrap:wrap;gap:6px 12px;font-size:12px;margin-top:8px}.lg i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:4px;vertical-align:-2px}
+#ptog{display:none;width:100%;margin-bottom:8px}
+#modal{position:fixed;inset:0;background:rgba(10,20,40,.7);display:none;align-items:center;justify-content:center;z-index:20;padding:16px}
+#modal div{background:#fff;border-radius:12px;padding:20px;max-width:420px;text-align:center}
+.kp{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px}.kp div{background:var(--bg);border-radius:8px;padding:10px;text-align:center}.kp b{display:block;font-size:20px;color:var(--n)}
+canvas{width:100%;height:260px;display:block}
+.ch{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.pill{display:inline-block;padding:3px 12px;border-radius:20px;color:#fff;font-weight:700}
+@media(max-width:820px){.wrap{grid-template-columns:1fr}#pal{position:static;display:none}#pal.open{display:block}#ptog{display:block}.ch{grid-template-columns:1fr}.hs{font-size:12px}}
+@media print{header{position:static}}
+</style></head><body>
+<header>
+<img src="data:image/jpeg;base64,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" alt="Seamate">
+<h1 id="hT">Seamate Achievers Batch Test</h1>
+<div class="hs" id="hS"></div><div id="timer">00:00:00</div>
+</header>
+
+<section class="page" id="reg"><div class="card" style="max-width:520px;margin:20px auto">
+<h2>Student Registration</h2><div style="color:#52627c">Seamate Achievers Batch Test</div>
+<label class="f">Student Name *</label><input type="text" id="rn" autocomplete="name">
+<label class="f">Mobile Number *</label><input type="tel" id="rp" autocomplete="tel" inputmode="numeric" placeholder="10-digit mobile number">
+<label class="f">Email Address *</label><input type="email" id="re" autocomplete="email">
+<div class="err" id="rerr"></div>
+<button id="rb" style="width:100%;margin-top:8px">Continue</button></div></section>
+
+<section class="page" id="ins"><div class="card ins">
+<h2>Examination Instructions</h2>
+<h3>Examination Details</h3>
+<ul><li>Total Questions: <b id="iN"></b></li><li>Sections: <span id="iS"></span></li><li>Duration: <b id="iD"></b></li>
+<li>The timer starts only when Question 1 appears and continues while you navigate. The test auto-submits when time ends.</li></ul>
+<h3>Marking Scheme</h3>
+<ul><li>Correct: +1</li><li>Incorrect: −0.25</li><li>Unattempted: 0</li><li>Maximum marks: <b id="iM"></b></li></ul>
+<h3>Anti-Cheating</h3>
+<ul><li>Changing tabs: the first 3 switches show a warning only. More than 3 switches automatically submits the test.</li>
+<li>Copy attempts, right-clicks, console/DevTools access and fullscreen exits are recorded and shown in your result.</li>
+<li>Detection is browser-based and cannot be perfect, but every detectable event is logged.</li>
+<li>Do not refresh or close the page during the test: your progress will be lost.</li></ul>
+<h3>Admin WhatsApp</h3>
+<ul><li>Admin WhatsApp: 8116217554. After the test, share your final result with the admin using the <b>Share with Admin</b> button.</li></ul>
+<h3>Leaderboard</h3><ul><li>Leaderboard will be released on the next day.</li></ul>
+<label><input type="checkbox" id="iok"> I have read and agree to the instructions.</label>
+<div class="err" id="ierr"></div>
+<button id="sb" style="margin-top:8px">Start Test</button></div></section>
+
+<section class="page" id="exam"><div class="wrap">
+<div><button id="ptog" class="s">Question Palette</button>
+<div class="card" id="qcard">
+<div class="qh"><span id="qno"></span><span class="chip" id="qsub"></span></div>
+<div id="qtext"></div><div id="opts"></div>
+<div class="btns"><button class="s" id="bP">Previous</button><button class="s" id="bC">Clear Option</button>
+<button class="m" id="bM">Mark for Review</button><button id="bN">Next</button><button class="d" id="bS">Submit</button></div></div></div>
+<aside class="card" id="pal"><b>Question Palette</b><div class="grid" id="grid" style="margin-top:8px"></div>
+<div class="lg"><span><i style="background:#d9dee8"></i>Not visited</span><span><i style="background:var(--ok)"></i>Answered</span><span><i style="background:var(--bad)"></i>Not answered</span><span><i style="background:var(--mk)"></i>Marked</span><span><i style="outline:2px solid #f2b705"></i>Current</span></div>
+<div id="cnt" style="font-size:13px;margin-top:8px"></div></aside></div></section>
+
+<section class="page" id="res">
+<div class="card"><h2>Performance Report</h2><div id="rinfo"></div></div>
+<div class="card"><div class="kp" id="kp"></div></div>
+<div class="card ch"><div><b>Subject-wise Score (%)</b><canvas id="bar"></canvas></div><div><b>Performance Radar</b><canvas id="rad"></canvas></div></div>
+<div class="card"><b>Anti-Cheating Report</b><table class="t" id="ac" style="margin-top:8px"></table></div>
+<div class="card"><b>Doubt / Feedback *</b><div style="font-size:13px;color:#52627c">Mandatory before sharing. Write "None" if you have no doubt.</div>
+<textarea id="dt" rows="3" style="margin-top:6px"></textarea>
+<div class="btns"><button class="s" id="dn">None</button><button id="ds">Save Doubt / Feedback</button></div><div class="err" id="derr"></div></div>
+<div class="card"><div class="btns"><button id="sh">Share with Admin (WhatsApp)</button><button class="s" id="pd">Download Performance &amp; Answer Key</button></div>
+<div style="margin-top:8px;font-size:13px">Leaderboard will be released on the next day.</div></div>
+</section>
+
+<div id="modal"><div><p id="mt"></p><button id="mo">OK</button></div></div>
+
+<script>
+const SHEET_URL = "https://script.google.com/macros/s/AKfycbxlbqoN0TOHUCO6gH71qwmEpeYM4DPXTt26_Q3-sSxf2MrT4QIYZ91T2l8zebgDrCLRUA/exec";
+const TEST_NAME="Seamate Achievers Batch Test", ADMIN_WA="918116217554", GENERATED_BY="Seamate Online Test Platform";
+const NEG=0.25, PASS_PCT=40, DURATION_MIN=108, LOGO=document.querySelector("header img").src;
+/* ===== QUESTIONS & ANSWER KEY: [question, [A,B,C,D], correct index or [indexes]] ===== */
+const SUBJECTS=[["Mathematics",32],["Physics",26],["Chemistry",14],["English",24],["General Studies",12],["Aptitude",12]];
+const QS=[
+["A 4-digit number greater than 5,000 is formed from the digits 3, 4, 5, 6 & 7 (repeated). The number of such numbers is",["70","27","72","None"],[2,3]],
+["F(x) = x|x| at x = 0 is continuous and differentiable",["f(x) is continuous at x = 0","f(x) is discontinuous at x = 0","f(x) is differentiable at x = 0","f(x) is not differentiable at x = 0"],[0,2]],
+["Area of the region bounded by y-axis, y = sin x, y = cos x, 0 ≤ x ≤ π/2",["√2","√2 + 1","√2 − 1","2(√2 − 1)"],2],
+["Order & degree of the differential equation of the family of curves Y = Ax + A³, A arbitrary constant, are",["2, 3","1, 2","1, 3","2, 4"],2],
+["P(A) = 0.4, P(A ∪ B) = 0.7. If A & B are mutually exclusive events then the value of P(B) is",["0.4","0.3","0.5","0.6"],1],
+["Inverse of a skew-symmetric matrix of odd order",["does not exist","skew symmetric","diagonal matrix","symmetric matrix"],0],
+["How many ways can 9 letters be posted in 4 letter boxes?",["4⁵","3024","126","4⁹"],3],
+["Normal at point (1, 1) on curve 2y + x² = 3",["x − y = 1","x − y = 0","x + y = 0","x + y + 1 = 0"],1],
+["Principal value of tan⁻¹(tan 3π/5)",["−2π/5","−3π/5","3π/5","2π/5"],0],
+["AB & BA both exist, then",["AB = −BA","A & B are non singular","A & B are singular","AB ≠ BA"],3],
+["∫ from 0 to 1.5 of [x²] dx =",["2√2","√2 − 1","2 − √2","2(1.5 − √2)"],2],
+["Distance of point (a, b, c) from y-axis is",["b","√(a² + c²)","|c| + |b|","|b|"],1],
+["A is a square matrix of order 3 such that A(adj A) = 10 I, then |adj A|",["10","10 I","100","1"],2],
+["Absolute max. value of F(x) = 4x − (1/2)x² in interval [−2, 9/2] is",["6","10","9","8"],3],
+["Number of arrangements of 10 different things taken 4 at a time in which one particular thing always occurs is",["2016","2014","2015","None of these"],0],
+["∫ from 0 to π/4 of log(1 + tan x) dx",["(π/2) log 2","(π/8) log 2","π log 2","4π log 2"],1],
+["3 numbers are chosen randomly from 1 to 20. Probability that they are consecutive is",["5/190","3/190","1/120","1/190"],1],
+["Differentiate log[log(log x²)] w.r.t. x",["2 / [x log(log x²)]","2 / [x log(x²) log(log x²)]","2x / [log(x²) log(log x²)]","2 / (log x²)"],1],
+["Area of Δ whose vertices are A(1, −2, 3), B(2, −3, 4) & C(−2, 1, 0)",["0","3","2","1"],0],
+["R is a relation on set A = {1, 2, 3} given by {(1, 1), (2, 2), (3, 3)}. R is",["Symmetric","Reflexive","Transitive","Equivalence"],3],
+["Max. slope of curve Y = −x³ + 3x² + 12x − 5",["0","9","12","15"],3],
+["Function F(x) = tan x − x",["always increases","always decreases","Remain constant","Sometimes"],0],
+["Lines (x − 1)/(−3) = (y − 2)/(2K) = (z − 3)/2 & (x − 1)/(3k) = (y − 5)/1 = (6 − z)/5 are mutually ⊥. K =",["10/7","7","−10","−10/7"],3],
+["No. of ways in which 8 examination papers can be arranged so that the best & worst paper never come together is",["8!","8! − 7!","None","8! − 2 × 7!"],3],
+["Y = F(x²) & F'(x) = e^√x, then dy/dx",["4x e^√x","4x eˣ","2x e^(2√x)","2x eˣ"],3],
+["Point on curve x² = 2y which is nearest to point (0, 2) is",["(2, 2)","(0, 0)","(2√2, 4)","(2√2, 0)"],[0,1]],
+["A = {a, b, c} & B = {−2, −1, 0, 1, 2}. The no. of injections from A to B is",["125","243","60","120"],2],
+["Equation cos⁻¹x + sin⁻¹x = 11π/6 has",["Two solution","unique solution","more than 2 solution","No solution"],3],
+["Reflection of point (a, b, c) on x-y plane",["(a, b, c)","(0, 0, c)","(−a, −b, −c)","(a, b, 0)"],3],
+["Area of the region bounded by x-axis, Y = √(16 − x²)",["20π","16π","256π","8π"],3],
+["a, b & c are unit vectors such that a + b + c = 0. Value of a·b + a·c + b·c",["3/2","−3/2","None","−1"],1],
+["∫ x dx / (4 + x⁴) =",["(1/2) tan⁻¹(2x²) + C","(1/4) tan⁻¹(x²/2) + C","(1/2) tan⁻¹(x²/2) + C","(1/4) tan⁻¹(x²) + C"],1],
+["The ratio of amplitude of magnetic field to the amplitude of electric field for an electromagnetic wave propagating in vacuum is equal to?",["The speed of light in vacuum","Reciprocal of speed of light in vacuum","The ratio of magnetic permeability to the electric susceptibility of vacuum","Unity"],1],
+["If earth suddenly shrinks to half of its present radius then acceleration due to gravity will be",["4g","g/2","g/4","2g"],0],
+["A charge Q is enclosed by a Gaussian spherical surface of Radius R. If Radius is doubled then the outward electric flux will",["increase four time","remain the same","be reduced to half","be doubled"],1],
+["A solid sphere is rotating freely about its symmetric axis in free space. The radius of the sphere is increased keeping its mass same. Which of the following physical quantities would remain constant?",["Rotational KE","Angular momentum","Angular velocity","Moment of inertia"],1],
+["The escape velocity for a body of mass 1 kg from earth surface is 11.2 km s⁻¹. The escape velocity for a body of mass 100 kg would be",["11.2 km s⁻¹","112 km s⁻¹","11.2 × 10² kg m s⁻¹","11.2 × 10⁻² kg m s⁻¹"],0],
+["If torque is zero then",["angular momentum is not conserved","energy is conserved","linear momentum is conserved","angular momentum is conserved"],3],
+["In elastic collision,",["Only KE is conserved","Only momentum is conserved","Neither KE nor momentum is conserved","Both are conserved"],3],
+["Two pure inductors each of self-inductance L are connected in parallel but are well separated from each other. The total inductance",["L/2","2L","L","L/4"],0],
+["A body is executing SHM with an amplitude of 0.1 m. Its velocity while passing through the mean position is 3 m s⁻¹. Its frequency is",["30π","25π","15π","15/π"],3],
+["The ratio of terminal velocity of two drops of Radii R & R/2 is",["4","2","1","1/2"],0],
+["In which of the following transition will the wavelength be minimum",["n = 2 to n = 1","n = 3 to n = 2","n = 4 to n = 3","n = 5 to n = 4"],0],
+["A ball of mass (m) is moving towards a player with velocity v. If player stopped it, the impulse applied by the player is",["+2mv","−mv","−mu","−2mu"],1],
+["The diameter of a hollow metallic sphere is 60 cm and the sphere carries a charge of 500 μC. The potential at a distance of 100 cm from the centre of the sphere will be",["4.5 × 10⁶ V","5 × 10⁶ V","7 × 10⁶ V","6 × 10⁻⁶ V"],0],
+["Intrinsic semiconductor is electrically neutral. Extrinsic semiconductor having large number of current carriers would be",["−ve charged","+ve charged or −ve charged depending upon the type of impurity that has been added","electrically neutral","positively charged"],2],
+["A particle of mass 2 kg is moving along a circular path of radius 1 m. If angular speed is 2π s⁻¹, the centripetal force on it is",["8π N","4π N","4π⁴ N","8π² N"],3],
+["The current through wire depends on time as I = 3t² + 2t + 5. The charge flowing through the cross section of wire in time interval between t = 0 to t = 2 s is",["22 C","5 C","20 C","18 C"],0],
+["A block of mass 2 kg is placed on the floor. The co-efficient of static friction is 0.4. If a force of 2.8 N is applied on block parallel to the floor, the friction between block & floor is",["2.8 N","2 N","0","8 N"],0],
+["In a certain region of space with volume 0.2 m³ the electric potential is found to be 5 V throughout. The magnitude of electric field in this region is",["zero","1 N/C","5 N/C","0.5 N/C"],0],
+["A body falling vertically downwards under gravity breaks in two parts of unequal masses. The centre of mass of two parts taken together shifts horizontally towards",["Lighter piece","depends on the vertical velocity at the time of breaking","does not shift horizontally","heavier piece"],2],
+["In Young's double slit experiment green light (λ = 5461 Å) is used & 60 fringes were seen in the field view. Now sodium light is used (λ = 5890 Å), then the number of fringes observed are",["40","55","50","60"],1],
+["A force F = (2i + 3j + 4k) N acting on a body for 4 s produces d = (3i + 4j + 5k) m. The power used",["9.5 W","7.5 W","6.5 W","4.5 W"],0],
+["Some electric bulbs are connected in series across a 220 V supply in a room. If one bulb is fused the remaining bulbs are connected in series across the same supply. The illumination in the room will",["not continuous","increase","decrease","remain the same"],1],
+["The torque of force F = −3i + j + 5k acting on a point r = 7i + 3j + 5k about origin will be",["4i + 4j + 6k","−14i − 38j − 16k","−21i + 3j + 5k","14i − 38j + 16k"],3],
+["The potential of two plates of a capacitor are +10 V and −10 V respectively. The charge on one of the plates is 40 C. The capacitance of the capacitor is",["0.5 F","4 F","0.25 F","2 F"],3],
+["Two solid conductors are made up of same material, have same length & same resistance. One of them has circular cross section of area A1 and the other one has a square cross section A2. The ratio A1/A2 is",["1:5","1","0.8","2"],1],
+["In a Rutherford scattering experiment when a projectile of Z1 & M1 approaches a target nucleus of Z2 and M2, the distance of closest approach is r0. The energy of projectile is:",["Directly proportional to Z1Z2","Inversely proportional to Z1","Directly proportional to mass M1","Directly proportional to M1 × M2"],0],
+["Among the following species which has largest size: Ca²⁺, K⁺, Cl⁻, S²⁻",["Cl⁻","Ca²⁺","S²⁻","K⁺"],2],
+["Chloroform on decomposition in the presence of air or light gives HCl gas along with poisonous gas having chemical formula",["COCl₃","COCl₂","CH₃NC","CO"],1],
+["Quantity of electricity needed to reduce 1 mole of Cr₂O₇²⁻",["6 F","12 F","2 F","4 F"],0],
+["Van't Hoff factor for AlCl₃",["2","3","4","5"],2],
+["In Apollo space craft the fuel cell used was",["H₂–O₂ fuel cell","Both a & b","CH₄–O₂ fuel cell","None"],0],
+["Glucose is oxidized into gluconic acid by Tollen's reagent; this can be identified through",["formation of red ppt","formation of silver mirror","evolution of gas","formation of yellow ppt"],1],
+["Conjugate base of NH₃",["N₂H₄","NH₂⁻","NH₄⁺","NH₄OH"],1],
+["Haloalkane reacts with AgCN to form",["alkyl cyanide","alkyl aryl isocyanide","alkyl isocyanide","alkyl aryl cyanide"],2],
+["Nitrogen base found in RNA",["cytosine, adenine, uracil, Guanine","cytosine, adenine, uracil, Thymine","cytosine, adenine, Thymine, Uracil","cytosine, adenine, uracil"],0],
+["O₂⁻ is",["paramagnetic having bond order 1.5","paramagnetic having bond order 2","diamagnetic having bond order 1","diamagnetic having bond order 3"],0],
+["IUPAC name of [Co(NH₃)₅Cl]Cl₂ is",["pentaamminechlorido cobalt (III) chloride","pentaamminechlorido cobalt (II) chloride","pentaamminechlorido cobalt (III) chlorido","pentaamminechlorido cobaltate (III) chloride"],0],
+["The pKa & pKb are 4.28 & 4.27 respectively. The pH of corresponding salt will be",["11.775","6.995","7.005","7.050"],2],
+["The value of Kc for the reaction 2NOCl(g) ⇌ 2NO(g) + Cl₂(g), Kp = 1.8 × 10⁻² at 500 K",["8.3 × 10⁻⁴ mol/L","0.43 × 10⁻⁴ mol/L","2.15 × 10⁻⁴ mol/L","4.3 × 10⁻⁴ mol/L"],3],
+["When formaldehyde reacts with which one of the following compounds to give Urotropine",["Methyl amine","Ammonia","Ammonium hydroxide","Ammonium chloride"],1],
+["One who studied evolution of mankind",["Anthropologist","Geologist","Sociologist","Archaeologist"],0],
+["A person who is talkative",["Chatty","Loquacious","Taciturn","Reticent"],1],
+["The play was written by John Donne (Active)",["The play is written by John Donne","John Donne wrote the play","John Donne is writing the play","The play has been written by John Donne"],1],
+["The book published after the death of author",["Manuscript","Post Mortem","Posthumous","Premortem"],2],
+["Our professor's lecture was quite verbose",["Brief","lengish","lengthy","concise"],2],
+["I ____ in Dublin for three years now",["Lived","living","am living","have been living"],3],
+["If it ____ tomorrow, we will stay indoors",["Rains","would rain","will rain","should rains"],0],
+["The instruction were vague making it difficult to assemble the furniture",["Clean","incomplete","ambiguous","confusing"],2],
+["The inadvertent mistake led to a huge loss",["Intentional","Miscalculated","Predictable","unintentional"],3],
+["The preamble to the constitution outline the fundamental principle",["Article","conclusion","amendment","Introduction"],3],
+["The company profit began to dwindle",["Increase","diminish","Stabilize","fluctuate"],1],
+["The new policy was implemented by the management",["The management implemented the new policy","The new policy has been implemented","The management is implementing the new policy","The new policy is being implemented"],0],
+["A group of three novels or plays with a common theme",["Anthology","Trilogy","chronicle","series"],1],
+["The serendipitous discovery led to a breakthrough",["Intentional","accidental","planned","deliberate"],1],
+["By the time I arrived, they ____ their project",["Had finished","have finished","finish","were finished"],0],
+["The old house was filled with ____ furniture and dusty artifacts",["Contemporary","Antique","Orchard","Historical"],1],
+["She was fastidious about her work and never compromised on the quality",["Indifferent","painstaking","lazy","careless"],1],
+["A statement that is seemingly contradictory but may be true",["Oxymoron","Epigram","Paradox","Hyperbole"],2],
+["If I ____ the solution, I would tell you",["Knew","know","have known","had known"],0],
+["The artist's work was considered eccentric",["Common","Conventional","unusual","typical"],2],
+["The tech company product was at the cutting edge of industry trends (opposite)",["State of the art","absolute","behind the times","traditional"],2],
+["By the next year, I ____ Chinese for five years",["Am studying","Study","Will have been studying","Have been studying"],2],
+["A person who composes or writes a dictionary",["Cartographer","Lexicographer","Stenographer","Calligrapher"],1],
+["The researcher's assertion that climate change is irreversible has sparked intense debate",["Concession","claim","denial","Hypothesis"],1],
+["Which country has no river?",["Saudi Arabia","Indonesia","Nepal","Norway"],0],
+["The Digboi oil refinery in India is located at",["Andhra Pradesh","Himachal Pradesh","Uttar Pradesh","Assam"],3],
+["Headquarter of National Institute of Oceanography is located?",["Andhra Pradesh","Goa","New Delhi","Mumbai"],1],
+["The oldest port in India:",["Chennai","Kolkata","Lothal","Vishakhapatnam"],2],
+["Which state in India has the least literacy rate?",["West Bengal","Andhra Pradesh","Bihar","Kerala"],2],
+["Which is the southernmost port of India?",["Vizag port","Cochin port","Chennai port","Tuticorin"],3],
+["Surat is situated on the bank of which river?",["Ganges","Tapi","Godavari","Yamuna"],1],
+["Which state is known as \"Land of five rivers\"?",["Punjab","Maharashtra","Kerala","Haryana"],0],
+["Koyana multipurpose project is in which state?",["UP","Nagaland","Assam","Maharashtra"],3],
+["Deepest port in India?",["Cochin port","Gangavaram port","Kandla port","JNPT"],1],
+["The Indian constitution was adopted and enacted by the constituent assembly of India (now the Lok Sabha and Rajya Sabha) on?",["9 Dec 1946","15 Aug 1957","26 Nov 1949","26 Jan 1950"],2],
+["Which city in India is called as \"garden city\"?",["Jaipur","Bengaluru","Jabalpur","Ladakh"],1],
+["Spot the stranger:",["Delight","Happiness","Joy","Sorrow"],3],
+["Choose the most appropriate word to fill in the blank: Read is to write as listen is to ____",["Hear","Ignore","Understand","Speak"],3],
+["Continue the given series: 112, 223, 334, 445, ____",["778","667","889","556"],3],
+["Write the next number in the series: 3, 6, 12, 24, ____",["48","36","60","72"],0],
+["Teacher is to classroom as Chef is to ____",["Kitchen","Food","Plate","Cup"],0],
+["Spot the stranger:",["Carrot","Mango","Apple","Grapes"],0],
+["Choose the response which proves the answer for the following: If 23 = 618, 45 = 2030, 36 = 1836 then 57 = ?",["3549","3042","3575","3035"],0],
+["Spot the stranger:",["16","25","37","49"],2],
+["If HELLO is coded as IFMMP, what is the code for WORLD?",["XPSMS","XPDMD","XPSMD","XPSME"],3],
+["If CAT is coded as DBU, what is the code of DOG?",["EPT","EPH","EPJ","EPI"],1],
+["In 100 m Race, A covers the distance in 36 sec, B in 45 sec. In this race A beats B by",["25 m","20 m","30 m","35 m"],1],
+["Choose the pair — Pen and Paper:",["Pencil and Eraser","Keyboard and CPU","Brush and Canvas","Keyboard and Monitor"],2]
+];
+const N=QS.length, MAXM=N;
+const SUBJ=[];SUBJECTS.forEach(([n,c])=>{for(let i=0;i<c;i++)SUBJ.push(n)});
+if(SUBJ.length!==N)console.error("Subject ranges do not match question count");
+const isOK=(i,a)=>[].concat(QS[i][2]).includes(a);
+const keyLetters=i=>[].concat(QS[i][2]).map(k=>"ABCD"[k]).join("/");
+
+/* ===== helpers ===== */
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const pad=n=>String(n).padStart(2,"0");
+function generateSubmissionId(){const d=new Date();return "SM-"+d.getFullYear()+pad(d.getMonth()+1)+pad(d.getDate())+"-"+pad(d.getHours())+pad(d.getMinutes())+pad(d.getSeconds())+"-"+Math.floor(1000+Math.random()*9000);}
+const postToDatabase=(data)=>{
+  if(!SHEET_URL){console.error("SHEET_URL is missing");return;}
+  fetch(SHEET_URL,{method:"POST",mode:"no-cors",body:JSON.stringify(data),keepalive:true})
+  .then(()=>{console.log("Seamate database request sent successfully");})
+  .catch(error=>{console.error("Seamate database submission failed:",error);});
+};
+const fmtT=s=>{const h=Math.floor(s/3600),m=Math.floor(s%3600/60);return (h?h+"h ":"")+m+"m "+(s%60)+"s";};
+function modal(msg){$("mt").textContent=msg;$("modal").style.display="flex";}
+$("mo").onclick=()=>{$("modal").style.display="none";};
+function go(id){["reg","ins","exam","res"].forEach(p=>$(p).style.display=p===id?"block":"none");scrollTo(0,0);}
+
+/* ===== state ===== */
+const S={name:"",phone:"",email:"",id:"",i:0,ans:[],vis:[],mark:[],tabs:0,copy:0,rc:0,con:0,fs:0,active:false,done:false,flagged:false,t0:0,end:0,tm:null,dt:null,conOpen:false,doubtSent:false,R:null};
+$("iN").textContent=N;$("iM").textContent=MAXM;$("iD").textContent=DURATION_MIN+" minutes";
+$("iS").textContent=SUBJECTS.map(s=>s[0]+" ("+s[1]+")").join(", ");
+go("reg");
+
+/* ===== registration / instructions ===== */
+$("rb").onclick=()=>{
+  const n=$("rn").value.trim(),p=$("rp").value.replace(/[\s\-+]/g,"").replace(/^91(?=\d{10}$)/,""),e=$("re").value.trim();
+  let m="";
+  if(n.length<2)m="Please enter your full name.";
+  else if(!/^\d{10}$/.test(p))m="Enter a valid 10-digit mobile number.";
+  else if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e))m="Enter a valid email address (mandatory).";
+  $("rerr").textContent=m;if(m)return;
+  Object.assign(S,{name:n,phone:p,email:e});$("hS").innerHTML="<b>"+esc(n)+"</b>"+esc(p);go("ins");
+};
+$("sb").onclick=()=>{
+  if(!$("iok").checked){$("ierr").textContent="Please accept the instructions to continue.";return;}
+  $("ierr").textContent="";
+  S.id=generateSubmissionId();
+  try{const el=document.documentElement;if(el.requestFullscreen)el.requestFullscreen().catch(()=>{});}catch(e){}
+  go("exam");buildGrid();show(0);startTimer();S.active=true;
+};
+
+/* ===== timer (starts when Q1 is shown) ===== */
+function startTimer(){
+  S.t0=Date.now();S.end=S.t0+DURATION_MIN*60000;$("timer").style.display="block";
+  const tick=()=>{const r=Math.max(0,Math.ceil((S.end-Date.now())/1000));
+    $("timer").textContent=pad(Math.floor(r/3600))+":"+pad(Math.floor(r%3600/60))+":"+pad(r%60);
+    $("timer").classList.toggle("low",r<300);
+    if(r<=0)finish("timeup");};
+  tick();S.tm=setInterval(tick,500);
+  S.dt=setInterval(()=>{ // devtools heuristic
+    if(!S.active||S.done)return;
+    const open=(outerWidth-innerWidth>160)||(outerHeight-innerHeight>200);
+    if(open&&!S.conOpen){S.con++;S.conOpen=true;modal("Console / DevTools access detected and recorded.");}
+    else if(!open)S.conOpen=false;
+  },1500);
+}
+
+/* ===== question UI ===== */
+function show(i){
+  S.i=i;S.vis[i]=1;const q=QS[i];
+  $("qno").textContent="Question "+(i+1)+" of "+N;$("qsub").textContent=SUBJ[i];
+  $("qtext").textContent=q[0];
+  $("opts").innerHTML=q[1].map((o,k)=>'<label class="opt'+(S.ans[i]===k?" sel":"")+'"><input type="radio" name="o" value="'+k+'"'+(S.ans[i]===k?" checked":"")+'><b>'+"ABCD"[k]+'</b><span>'+esc(o)+'</span></label>').join("");
+  $("bP").disabled=i===0;$("bN").disabled=i===N-1;
+  $("bM").textContent=S.mark[i]?"Unmark Review":"Mark for Review";
+  paint();
+}
+$("opts").addEventListener("change",e=>{if(e.target.name==="o"){S.ans[S.i]=+e.target.value;show(S.i);}});
+$("bP").onclick=()=>S.i>0&&show(S.i-1);
+$("bN").onclick=()=>S.i<N-1&&show(S.i+1);
+$("bC").onclick=()=>{delete S.ans[S.i];show(S.i);};
+$("bM").onclick=()=>{S.mark[S.i]=!S.mark[S.i];if(S.mark[S.i]&&S.i<N-1)show(S.i+1);else show(S.i);};
+$("bS").onclick=()=>{
+  const a=S.ans.filter(x=>x!==undefined).length;
+  if(confirm("Submit the test now?\nAnswered: "+a+" / "+N+"\nUnanswered: "+(N-a)))finish("manual");
+};
+$("ptog").onclick=()=>$("pal").classList.toggle("open");
+function buildGrid(){
+  $("grid").innerHTML=QS.map((_,i)=>'<button data-i="'+i+'">'+(i+1)+'</button>').join("");
+  $("grid").onclick=e=>{const b=e.target.closest("button");if(b){show(+b.dataset.i);$("pal").classList.remove("open");}};
+}
+function paint(){
+  const bs=$("grid").children;let a=0,m=0,u=0,nv=0;
+  for(let i=0;i<N;i++){
+    const ans=S.ans[i]!==undefined;let c="";
+    if(S.mark[i]){c="m";m++;}else if(ans){c="a";}else if(S.vis[i]){c="u";}
+    if(ans)a++;if(!S.vis[i])nv++;else if(!ans)u++;
+    bs[i].className=c+(i===S.i?" c":"");
+  }
+  $("cnt").textContent="Answered "+a+" · Not answered "+u+" · Marked "+m+" · Not visited "+nv;
+}
+
+/* ===== anti-cheating ===== */
+document.addEventListener("visibilitychange",()=>{
+  if(!S.active||S.done||!document.hidden)return;
+  S.tabs++;
+  if(S.tabs>3){S.flagged=true;finish("cheating");}
+  else modal("Warning "+S.tabs+" of 3: tab switching is not allowed. More than 3 tab switches will auto-submit your test.");
+});
+document.addEventListener("copy",e=>{if(S.active&&!S.done){e.preventDefault();S.copy++;}});
+document.addEventListener("contextmenu",e=>{if(S.active&&!S.done){e.preventDefault();S.rc++;}});
+document.addEventListener("keydown",e=>{
+  if(!S.active||S.done)return;
+  const k=e.key.toLowerCase();
+  if(e.key==="F12"||(e.ctrlKey&&e.shiftKey&&["i","j","c"].includes(k))||(e.metaKey&&e.altKey&&["i","j","c"].includes(k))||(e.ctrlKey&&k==="u")){e.preventDefault();S.con++;}
+});
+document.addEventListener("fullscreenchange",()=>{if(S.active&&!S.done&&!document.fullscreenElement)S.fs++;});
+addEventListener("beforeunload",e=>{if(S.active&&!S.done){e.preventDefault();e.returnValue="";}});
+
+/* ===== submission & scoring ===== */
+function finish(reason){
+  if(S.done)return;S.done=true;S.active=false;clearInterval(S.tm);clearInterval(S.dt);
+  $("modal").style.display="none";$("timer").style.display="none";
+  const spent=Math.min(DURATION_MIN*60,Math.round((Date.now()-S.t0)/1000));
+  let c=0,w=0;const sub={};SUBJECTS.forEach(s=>sub[s[0]]={c:0,w:0,n:s[1]});
+  const rows=[];
+  for(let i=0;i<N;i++){
+    const a=S.ans[i];let st="Unattempted";
+    if(a!==undefined){if(isOK(i,a)){c++;sub[SUBJ[i]].c++;st="Correct";}else{w++;sub[SUBJ[i]].w++;st="Incorrect";}}
+    rows.push({q:i+1,subj:SUBJ[i],sel:a===undefined?"-":"ABCD"[a],key:keyLetters(i),st});
+  }
+  const att=c+w,un=N-att,total=c-w*NEG,pct=total/MAXM*100;
+  const R=S.R={submissionId:S.id,testName:TEST_NAME,studentName:S.name,phone:S.phone,email:S.email,
+    totalMarks:+total.toFixed(2),maximumMarks:MAXM,percentage:+pct.toFixed(2),passFail:pct>=PASS_PCT?"Pass":"Fail",
+    timeTaken:fmtT(spent),submissionDate:new Date().toLocaleString("en-IN"),correctAnswers:c,incorrectAnswers:w,unattempted:un,attempted:att,
+    tabSwitches:S.tabs,copyAttempts:S.copy,rightClickAttempts:S.rc,consoleDevTools:S.con,fullscreenExits:S.fs,
+    antiCheatingStatus:S.flagged?"Flagged":"Clean",doubtFeedback:"",generatedBy:GENERATED_BY,sub,rows,reason};
+  // ONE result record per attempt (sendBeacon-style single call, guarded by S.done)
+  const rec={type:"result"};["submissionId","testName","studentName","phone","email","totalMarks","maximumMarks","percentage","passFail","timeTaken","submissionDate","correctAnswers","incorrectAnswers","unattempted","attempted","tabSwitches","copyAttempts","rightClickAttempts","consoleDevTools","antiCheatingStatus","doubtFeedback","generatedBy"].forEach(k=>rec[k]=R[k]);
+  postToDatabase(rec);
+  if(document.fullscreenElement)document.exitFullscreen().catch(()=>{});
+  renderResult(reason);
+}
+function renderResult(reason){
+  const R=S.R;go("res");
+  $("rinfo").innerHTML=esc(R.studentName)+" · "+esc(R.phone)+" · "+esc(R.email)+"<br>"+esc(R.testName)+" · Submission ID: "+R.submissionId+
+    (reason==="cheating"?'<br><b style="color:var(--bad)">Test auto-submitted: more than 3 tab switches.</b>':reason==="timeup"?"<br><b>Test auto-submitted: time expired.</b>":"");
+  const k=[["Total Marks",R.totalMarks+"/"+R.maximumMarks],["Percentage",R.percentage+"%"],["Result",R.passFail],["Time Taken",R.timeTaken],["Attempted",R.attempted],["Correct",R.correctAnswers],["Incorrect",R.incorrectAnswers],["Unattempted",R.unattempted]];
+  $("kp").innerHTML=k.map(x=>"<div>"+x[0]+"<b>"+esc(x[1])+"</b></div>").join("");
+  $("ac").innerHTML=[["Tab Switches",R.tabSwitches],["Copy Attempts",R.copyAttempts],["Right-Click Attempts",R.rightClickAttempts],["Console Access Attempts",R.consoleDevTools],["Fullscreen Exit Count",R.fullscreenExits],["Status",R.antiCheatingStatus]].map(x=>"<tr><th>"+x[0]+"</th><td>"+x[1]+"</td></tr>").join("");
+  const names=SUBJECTS.map(s=>s[0]),pcts=names.map(n=>{const s=R.sub[n];return Math.max(0,(s.c-s.w*NEG)/s.n*100);});
+  bar($("bar"),names,pcts);
+  radar($("rad"),names.concat(["Accuracy","Overall"]),pcts.concat([R.attempted?R.correctAnswers/R.attempted*100:0,Math.max(0,R.percentage)]));
+}
+function bar(c,l,v){
+  const d=devicePixelRatio||1,w=c.clientWidth,h=260;c.width=w*d;c.height=h*d;const x=c.getContext("2d");x.scale(d,d);
+  const L=30,B=h-48,T=14,bw=(w-L)/l.length;x.font="11px sans-serif";x.textAlign="center";
+  for(let g=0;g<=4;g++){const y=B-(B-T)*g/4;x.strokeStyle="#dde3ee";x.beginPath();x.moveTo(L,y);x.lineTo(w,y);x.stroke();x.fillStyle="#52627c";x.textAlign="right";x.fillText(g*25,L-4,y+4);}
+  l.forEach((n,i)=>{const bh=(B-T)*v[i]/100,xx=L+i*bw+bw*.2;x.fillStyle="#1b3a63";x.fillRect(xx,B-bh,bw*.6,bh);
+    x.fillStyle="#16253b";x.textAlign="center";x.fillText(v[i].toFixed(0)+"%",xx+bw*.3,B-bh-4);
+    x.save();x.translate(xx+bw*.3,B+10);x.rotate(.5);x.textAlign="left";x.fillText(n.replace("General Studies","Gen. Studies"),0,0);x.restore();});
+}
+function radar(c,l,v){
+  const d=devicePixelRatio||1,w=c.clientWidth,h=260;c.width=w*d;c.height=h*d;const x=c.getContext("2d");x.scale(d,d);
+  const cx=w/2,cy=h/2+4,R=Math.min(w,h)/2-42,n=l.length,pt=(k,r)=>[cx+r*Math.cos(-Math.PI/2+k*2*Math.PI/n),cy+r*Math.sin(-Math.PI/2+k*2*Math.PI/n)];
+  x.font="11px sans-serif";x.textAlign="center";
+  for(let g=1;g<=4;g++){x.beginPath();for(let k=0;k<n;k++){const p=pt(k,R*g/4);k?x.lineTo(p[0],p[1]):x.moveTo(p[0],p[1]);}x.closePath();x.strokeStyle="#c9d3e3";x.stroke();}
+  l.forEach((t,k)=>{const e=pt(k,R),p=pt(k,R+16);x.beginPath();x.moveTo(cx,cy);x.lineTo(e[0],e[1]);x.stroke();x.fillStyle="#16253b";x.fillText(t.replace("General Studies","Gen. St."),p[0],p[1]+4);});
+  x.beginPath();v.forEach((val,k)=>{const p=pt(k,R*Math.min(100,val)/100);k?x.lineTo(p[0],p[1]):x.moveTo(p[0],p[1]);});x.closePath();
+  x.fillStyle="rgba(27,58,99,.35)";x.fill();x.strokeStyle="#1b3a63";x.lineWidth=2;x.stroke();
+}
+
+/* ===== doubt / share / pdf ===== */
+function saveDoubt(){
+  const t=$("dt").value.trim();
+  if(!t){$("derr").textContent="Doubt / Feedback is mandatory. Write 'None' if you have no doubt.";return null;}
+  $("derr").textContent="";
+  if(!S.doubtSent){S.doubtSent=true;S.R.doubtFeedback=t;
+    postToDatabase({type:"doubt",submissionId:S.id,doubtFeedback:t}); // same Submission ID, no new result row
+    $("dt").readOnly=true;$("ds").disabled=true;$("dn").disabled=true;$("ds").textContent="Saved";}
+  return S.R.doubtFeedback;
+}
+$("dn").onclick=()=>{if(!S.doubtSent)$("dt").value="None";};
+$("ds").onclick=saveDoubt;
+$("sh").onclick=()=>{
+  const d=saveDoubt();if(!d)return;const R=S.R;
+  const m="🎓 *Seamate - Achievers Batch Test Results*\n\n👤 *Student Details:*\nName: "+R.studentName+"\nPhone: "+R.phone+"\nE mail address: "+R.email+
+  "\n\n📊 *Test Performance:*\nTotal Marks: "+R.totalMarks+"/"+R.maximumMarks+"\nPercentage: "+R.percentage+"%\nPass/Fail: "+R.passFail+"\nTime Taken: "+R.timeTaken+"\nDate: "+R.submissionDate+
+  "\n\n✅ Correct Answers: "+R.correctAnswers+"\n❌ Incorrect Answers: "+R.incorrectAnswers+"\n⊘ Unattempted: "+R.unattempted+"\n📝 Attempted: "+R.attempted+
+  "\n\n⚠️ *Anti-Cheating Report:*\nTab Switches: "+R.tabSwitches+"\nCopy Attempts: "+R.copyAttempts+"\nRight-Click Attempts: "+R.rightClickAttempts+"\nConsole Access Attempts: "+R.consoleDevTools+"\nFullscreen Exit Count: "+R.fullscreenExits+"\nStatus: "+R.antiCheatingStatus+
+  "\n\n❓ *Doubt/Feedback:*\n"+d+"\n\nGenerated on Seamate Online Test Platform";
+  window.open("https://wa.me/"+ADMIN_WA.replace(/^(\d{10})$/,"91$1")+"?text="+encodeURIComponent(m),"_blank");
+};
+$("pd").onclick=()=>{
+  const R=S.R,{jsPDF}=window.jspdf||{};if(!jsPDF){modal("PDF library failed to load. Check your internet connection and try again.");return;}
+  const p=new jsPDF(),W=210;let y=0;
+  p.setFillColor(27,58,99);p.rect(0,0,W,28,"F");try{p.addImage(LOGO,"JPEG",8,3,22,22);}catch(e){}
+  p.setTextColor(255);p.setFontSize(17);p.text("Seamate Achievers Batch Test",36,13);p.setFontSize(10);p.text("Performance Report & Answer Key",36,21);
+  p.setTextColor(20);p.setFontSize(10);y=38;
+  [["Student",R.studentName],["Phone",R.phone],["Email",R.email],["Submission ID",R.submissionId],["Date",R.submissionDate],
+   ["Total Marks",R.totalMarks+" / "+R.maximumMarks],["Percentage",R.percentage+"%"],["Result",R.passFail],["Time Taken",R.timeTaken],
+   ["Correct / Incorrect / Unattempted",R.correctAnswers+" / "+R.incorrectAnswers+" / "+R.unattempted],
+   ["Anti-cheating","Tabs "+R.tabSwitches+", Copy "+R.copyAttempts+", Right-click "+R.rightClickAttempts+", Console "+R.consoleDevTools+", Fullscreen exits "+R.fullscreenExits+" | "+R.antiCheatingStatus]
+  ].forEach(r=>{p.setFont(undefined,"bold");p.text(r[0]+":",14,y);p.setFont(undefined,"normal");p.text(String(r[1]),70,y,{maxWidth:130});y+=6.5;});
+  y+=4;const head=()=>{p.setFillColor(27,58,99);p.rect(12,y-5,186,7,"F");p.setTextColor(255);p.setFont(undefined,"bold");
+    ["Q","Subject","Your Answer","Correct Answer","Status"].forEach((t,i)=>p.text(t,[14,28,80,115,155][i],y));p.setTextColor(20);p.setFont(undefined,"normal");y+=7;};
+  head();
+  R.rows.forEach(r=>{if(y>284){p.addPage();y=18;head();}
+    if(r.st==="Correct")p.setTextColor(30,120,70);else if(r.st==="Incorrect")p.setTextColor(180,40,30);else p.setTextColor(110);
+    [r.q,r.subj,r.sel,r.key,r.st].forEach((t,i)=>p.text(String(t),[14,28,80,115,155][i],y));y+=6;});
+  p.save("Seamate_Performance_"+R.submissionId+".pdf");
+};
+</script></body></html>
